@@ -62,3 +62,85 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun HomeBody(
+    statusUiSiswa: StatusUiSiswa,
+    onRetryClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when (statusUiSiswa) {
+            is StatusUiSiswa.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+            is StatusUiSiswa.Success -> {
+                if (statusUiSiswa.siswa.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.deskripsi_no_item),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                    )
+                } else {
+                    DaftarSiswa(
+                        itemSiswa = statusUiSiswa.siswa,
+                        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                    )
+                }
+            }
+            is StatusUiSiswa.Error -> ErrorScreen(
+                retryAction = onRetryClick,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+fun DaftarSiswa(
+    itemSiswa: List<DataSiswa>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
+        items(items = itemSiswa, key = { it.id }) { siswa ->
+            ItemSiswa(
+                siswa = siswa,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+            )
+        }
+    }
+}
+
+@Composable
+fun ItemSiswa(
+    siswa: DataSiswa,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = siswa.nama,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = siswa.telpon,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+            Text(
+                text = siswa.alamat,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
